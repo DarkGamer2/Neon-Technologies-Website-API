@@ -4,6 +4,9 @@ import nodemailer from "nodemailer";
 const Query = require("../models/Query.ts");
 const router = Router();
 
+router.get("/response", (req: Request, res: Response) => {
+  res.send("API is working as expected");
+});
 router.post("/contact", (req: Request, res: Response) => {
   const query = new Query(req.body);
   query.save().then(async () => {
@@ -31,4 +34,4 @@ router.post("/contact", (req: Request, res: Response) => {
   });
 });
 
-module.exports=router;
+module.exports = router;

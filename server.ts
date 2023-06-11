@@ -10,9 +10,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/api/neon_tech", contactRoutes);
 
-app.get("/api", (req: Request, res: Response) => {
-  res.send("API is Working");
-});
 dotenv.config();
 
 app.listen(process.env.PORT);
