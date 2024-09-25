@@ -1,37 +1,62 @@
 import { Router } from "express";
 import { Request, Response } from "express";
 import nodemailer from "nodemailer";
-const Query = require("../models/Query.ts");
+import dotenv from "dotenv";
+import Query from "../models/Query"; // Make sure this is the correct path to your model
+
 const router = Router();
+dotenv.config();
 
 router.get("/response", (req: Request, res: Response) => {
   res.send("API is working as expected");
 });
-router.post("/contact", (req: Request, res: Response) => {
-  const query = new Query(req.body);
-  query.save().then(async () => {
-    let transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
-      secure: false, // true for 465, false for other ports
-      auth: {},
+
+router.post("/contact", async (req: Request, res: Response) => {
+  try {
+    // Create a new Query instance from the request body
+    const query = new Query(req.body);
+
+    // Save the query and await its result
+    const data = await query.save();
+
+    // Set up nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      service: 'outlook',
+      auth: {
+        user: "nodejstester123@outlook.com",
+        pass: "Cartownhess53"
+      }
     });
 
-    // send mail with defined transport object
-    let info = await transporter.sendMail({
-      from: '"Fred Foo 👻" <foo@example.com>', // sender address
-      to: "bar@example.com, baz@example.com", // list of receivers
-      subject: "Hello ✔", // Subject line
-      text: "Hello world?", // plain text body
-      html: "<b>Hello world?</b>", // html body
+    // Email options
+    const mailOptions = {
+      from: 'nodejstester123@outlook.com',
+      to: process.env.DEV_EMAIL,  // Make sure DEV_EMAIL is set in your .env file
+      subject: `${query.clientFirstName} Has Requested a website/app. Details:`,
+      text: `Hello Mr.Hosein, here are the details of the client that has requested a website/app: \n
+        Student Name: ${query.clientFirstName}\n
+        Student Email: ${query.clientEmail}\n
+        Student Phone: ${query.clientPhoneNumber}\n
+        Query: ${query.clientQuery}\n
+        Best Regards`,
+    };
+
+    // Send email using nodemailer
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log('Error sending email:', error);
+      } else {
+        console.log('Email sent:', info.response);
+      }
     });
 
-    console.log("Message sent: %s", info.messageId);
-    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+    // Send response back to the client
+    res.status(200).send(data);
 
-    // Preview only available when sending through an Ethereal account
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-  });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send({ error: "Failed to save query or send email" });
+  }
 });
 
-module.exports = router;
+module.exports=router;

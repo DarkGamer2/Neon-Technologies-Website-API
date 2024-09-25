@@ -12,4 +12,4 @@ app.use("/api/neon_tech", contactRoutes);
 
 dotenv.config();
 
-app.listen(process.env.PORT);
+app.listen(process.env.PORT || 3000);
