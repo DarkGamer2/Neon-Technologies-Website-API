@@ -2,7 +2,8 @@ import { Router, Request, Response } from "express";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import Query from "../models/Query"; // Ensure the correct path to your model
-import { body, validationResult } from 'express-validator'; // Correct import style for express-validator
+const {body}=require("express-validator");
+const {validationResult}=require("express-validator") // Correct import style for express-validator
 import rateLimit from "express-rate-limit"; // Validation library for input validation
 import { createLogger, transports, format } from 'winston'; // Logging library for production
 
