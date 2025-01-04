@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { Schema } from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
-mongoose.connect(`${process.env.MONGO_URI}`);
+mongoose.connect(process.env.MONGO_URI);
 const querySchema = new Schema({
   clientFirstName: String,
   clientLastName: String,
